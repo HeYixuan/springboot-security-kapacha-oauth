@@ -1,0 +1,144 @@
+buildscript {
+	ext {
+		springBootVersion = '1.5.3.RELEASE'
+		oauth2Version = '2.1.0.RELEASE'
+	}
+	repositories {
+		maven {url "http://maven.aliyun.com/nexus/content/groups/public/" }
+	}
+	dependencies {
+		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+	}
+}
+
+apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: 'eclipse'
+apply plugin: 'org.springframework.boot'
+
+version = '1.0.0-SNAPSHOT'
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+buildDir = 'target'
+
+idea.project {
+	jdkName = '1.8'
+	languageLevel = '1.8'
+}
+
+[compileJava, javadoc, compileTestJava]*.options*.encoding = 'UTF-8'
+
+repositories {
+	maven {url "http://maven.aliyun.com/nexus/content/groups/public/" }
+}
+
+//mybaitis
+configurations {
+	/*all*.exclude group: "ch.qos.logback"
+    all*.exclude module: "log4j-over-slf4j"*/
+	mybatisGenerator
+}
+
+
+dependencies {
+	compile "org.springframework.boot:spring-boot-starter-web:$springBootVersion"
+	compile "org.springframework.boot:spring-boot-starter-aop:$springBootVersion"
+	compile "org.springframework.boot:spring-boot-starter-thymeleaf:$springBootVersion"
+	compile "org.springframework.boot:spring-boot-starter-security:$springBootVersion"
+	compile "org.springframework.security.oauth:spring-security-oauth2:$oauth2Version"
+	compile "org.springframework.security:spring-security-jwt:1.0.7.RELEASE"
+	compile "org.springframework.boot:spring-boot-starter-jdbc:$springBootVersion"
+	compile "org.thymeleaf.extras: thymeleaf-extras-springsecurity4: 3.0.2.RELEASE"
+	compile "org.springframework.statemachine:spring-statemachine-core:1.2.5.RELEASE"
+	//swagger
+	compile group: 'io.springfox', name: 'springfox-swagger2', version: '2.6.1'
+	compile group: 'io.springfox', name: 'springfox-swagger-ui', version: '2.6.1'
+	//mybatis
+	compile group: 'org.mybatis.spring.boot', name: 'mybatis-spring-boot-starter', version: '1.3.0'
+	compile group: 'org.mybatis.generator', name: 'mybatis-generator-core', version: '1.3.5'
+	//task
+	compile group: 'tk.mybatis', name: 'mapper-spring-boot-starter', version: '1.1.1'
+	//json
+	compile "com.alibaba:fastjson:1.2.32"
+	compile group: 'com.google.code.gson', name: 'gson', version:'2.7'
+
+	//apache
+	compile "org.apache.commons:commons-lang3:3.5"
+	compile group: 'org.apache.httpcomponents', name: 'httpclient', version:'4.5'
+
+	compile "com.thoughtworks.xstream:xstream:1.4.10"
+	testCompile group: 'com.google.inject', name: 'guice', version:'3.0'
+
+	runtime "mysql:mysql-connector-java:5.1.42"
+
+	testCompile "org.springframework.boot:spring-boot-starter-test:$springBootVersion"
+}
+// mybatis generator starts
+dependencies {
+	mybatisGenerator(
+			"mysql:mysql-connector-java:5.1.42",
+			"org.mybatis.generator:mybatis-generator-core:1.3.5",
+			"tk.mybatis:mapper:3.4.0"
+	)
+}
+
+def getDbProperties = {
+	def properties = new Properties()
+	file("src/main/resources/application.properties").withInputStream { inputStream ->
+		properties.load(inputStream)
+	}
+	properties
+}
+
+task generateMybatisSchema << {
+	def properties = getDbProperties()
+	def mainPath = sourceSets.main.java.srcDirs[0].path
+	def resourcePath = sourceSets.main.resources.srcDirs[0].path
+	def modelPath = properties.getProperty("packageModel")
+	def mapperPath = properties.getProperty("packageMapper")
+	//如果Mapper和XML存在创建一个_new目录
+	if (file("$mainPath/" + mapperPath.replace('.', '/')).exists()) {
+		mapperPath = mapperPath + "_new"
+	}
+	def sqlMapperPath = properties.getProperty("sqlMapperPackage")
+	if (file("$resourcePath/" + sqlMapperPath.replace('.', '/')).exists()) {
+		sqlMapperPath = sqlMapperPath + "_new"
+	}
+
+	ant.properties['targetProject'] = projectDir.path
+	ant.properties['driverClass'] = properties.getProperty("jdbc.driverClassName")
+	ant.properties['connectionURL'] = properties.getProperty("jdbc.url")
+	ant.properties['username'] = properties.getProperty("jdbc.username")
+	ant.properties['password'] = properties.getProperty("jdbc.password")
+	ant.properties['src_main_java'] = mainPath
+	ant.properties['src_main_resources'] = resourcePath
+	ant.properties['modelPackage'] = modelPath
+	ant.properties['mapperPackage'] = mapperPath
+	ant.properties['sqlMapperPackage'] = sqlMapperPath
+
+	/*ant.properties['src_main_java'] = sourceSets.main.java.srcDirs[0].path
+	ant.properties['src_main_resources'] = sourceSets.main.resources.srcDirs[0].path
+	ant.properties['modelPackage'] = properties.getProperty("packageModel")
+	ant.properties['mapperPackage'] = properties.getProperty("packageMapper")
+	ant.properties['sqlMapperPackage'] = properties.getProperty("sqlMapperPackage")*/
+	ant.taskdef(
+			name: 'schemaGenerator',
+			classname: 'org.mybatis.generator.ant.GeneratorAntTask',
+			classpath: configurations.mybatisGenerator.asPath
+	)
+	ant.schemaGenerator(overwrite: true,
+			configfile: 'src/main/resources/mybatisGeneratorConfig.xml', verbose: true) {
+		propertyset {
+			propertyref(name: 'targetProject')
+			propertyref(name: 'driverClass')
+			propertyref(name: 'connectionURL')
+			propertyref(name: 'username')
+			propertyref(name: 'password')
+			propertyref(name: 'src_main_java')
+			propertyref(name: 'src_main_resources')
+			propertyref(name: 'modelPackage')
+			propertyref(name: 'mapperPackage')
+			propertyref(name: 'sqlMapperPackage')
+		}
+	}
+}

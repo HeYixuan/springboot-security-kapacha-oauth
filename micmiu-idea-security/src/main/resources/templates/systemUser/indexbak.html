@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>首页</title>
+</head>
+<body>
+<h1 th:text="${host}">Hello Word</h1>
+<h1 th:inline="text">Hello [[${#httpServletRequest.remoteUser}]]!</h1>
+
+
+<br/>
+<br/>
+<br/>
+<a th:href="@{/logout}">登出</a>
+</body>
+</html>
