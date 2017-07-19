@@ -2,7 +2,7 @@ package org.springframe.configure;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframe.common.constans.GlobalConstant;
-import org.springframework.security.authentication.AuthenticationServiceException;
+import org.springframe.common.wxpay.exception.CaptchaException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -23,8 +23,8 @@ public class CaptchaAuthenticationFilter extends UsernamePasswordAuthenticationF
         String kaptcha = request.getParameter("kaptcha");
         String captcha = (String) request.getSession().getAttribute(GlobalConstant.KEY_CAPTCHA);
         if(StringUtils.isBlank(captcha) || (! captcha.equalsIgnoreCase(kaptcha))) {
-            throw new AuthenticationServiceException("图片验证码错误！");
-            //throw new CaptchaException("captcha Invalid");
+            //throw new AuthenticationServiceException("图片验证码错误！");
+            throw new CaptchaException("captcha Invalid");
         }
         return super.attemptAuthentication(request, response);
     }
