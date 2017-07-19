@@ -10,7 +10,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
-import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
+import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 
 /**
  * Created by HeYixuan on 2017/4/17.
@@ -95,8 +96,11 @@ public class SpringSecurityWebAppConfig extends WebSecurityConfigurerAdapter {
     public CaptchaAuthenticationFilter captchaAuthenticationFilter() throws Exception {
         CaptchaAuthenticationFilter captchaAuthenticationFilter = new CaptchaAuthenticationFilter();
         captchaAuthenticationFilter.setAuthenticationManager(authenticationManagerBean());
+        captchaAuthenticationFilter.setAuthenticationFailureHandler(new SimpleUrlAuthenticationFailureHandler("/login?error"));
+        captchaAuthenticationFilter.setAuthenticationSuccessHandler(new SimpleUrlAuthenticationSuccessHandler("/"));
         return captchaAuthenticationFilter;
     }
+
 
 
     /*@Bean
