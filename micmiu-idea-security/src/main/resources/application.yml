@@ -1,5 +1,5 @@
 server:
-    port: 8081
+    port: 8080
     session-timeout: 30 # session最大超时时间(分钟)，默认为30
 
 security:

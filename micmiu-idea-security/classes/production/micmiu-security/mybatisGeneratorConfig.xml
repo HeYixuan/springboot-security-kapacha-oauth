@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE generatorConfiguration
+        PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+        "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+
+<generatorConfiguration>
+    <context id="Mysql" targetRuntime="MyBatis3Simple" defaultModelType="flat">
+        <property name="javaFileEncoding" value="UTF-8"/>
+        <plugin type="tk.mybatis.mapper.generator.MapperPlugin">
+            <property name="mappers" value="tk.mybatis.mapper.common.Mapper"/>
+            <!-- caseSensitive默认false，当数据库表名区分大小写时，可以将该属性设置为true -->
+            <!--<property name="caseSensitive" value="true"/>-->
+        </plugin>
+        <commentGenerator>
+            <property name="suppressAllComments" value="true"/>
+        </commentGenerator>
+        <jdbcConnection driverClass="${driverClass}"
+                        connectionURL="${connectionURL}"
+                        userId="${username}"
+                        password="${password}">
+        </jdbcConnection>
+        <javaModelGenerator targetPackage="${modelPackage}" targetProject="${src_main_java}">
+            <!-- 从数据库返回的值被清理前后的空格  -->
+            <property name="trimStrings" value="true"/>
+            <property name="rootClass" value="org.springframe.common.core.SerializableModel"/>
+        </javaModelGenerator>
+        <sqlMapGenerator targetPackage="${sqlMapperPackage}" targetProject="${src_main_resources}"/>
+        <javaClientGenerator targetPackage="${mapperPackage}" targetProject="${src_main_java}" type="XMLMAPPER"/>
+        <!-- sql占位符，%表示所有的表 -->
+        <!-- sql占位符，表示所有的表 -->
+        <table tableName="%">
+            <generatedKey column="epa_id" sqlStatement="Mysql" identity="true" />
+        </table>
+        <!-- <table schema="DB2ADMIN" tableName="ALLTYPES" domainObjectName="Customer">
+            <property name="useActualColumnNames" value="true"/>
+            <generatedKey column="ID" sqlStatement="DB2" identity="true"/>
+            <columnOverride column="DATE_FIELD" property="startDate"/>
+            <ignoreColumn column="FRED"/>
+            <columnOverride column="LONG_VARCHAR_FIELD" jdbcType="VARCHAR"/>
+        </table>
+        <table tableName="%">
+            <generatedKey column="epa_id" sqlStatement="Mysql" identity="true"/>
+            <columnRenamingRule searchString="EP_" replaceString=""/>
+        </table>
+        <table tableName="orde_dat_new_loan">
+            <columnOverride column="NEW_LOAN_ID" property="newLoanId"/>
+        </table>-->
+    </context>
+</generatorConfiguration>
