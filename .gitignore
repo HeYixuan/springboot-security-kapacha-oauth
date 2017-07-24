@@ -7,7 +7,7 @@
 *.jar
 *.war
 *.ear
-
+classes/
 .gradle/  
 gradle/
 build/
