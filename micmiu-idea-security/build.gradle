@@ -48,8 +48,10 @@ dependencies {
 	compile "org.springframework.boot:spring-boot-starter-security:$springBootVersion"
 	compile "org.springframework.security.oauth:spring-security-oauth2:$oauth2Version"
 	compile "org.springframework.security:spring-security-jwt:1.0.7.RELEASE"
-	compile "org.springframework.boot:spring-boot-starter-jdbc:$springBootVersion"
+
+	compile "org.springframework.boot:spring-boot-starter-data-redis:$springBootVersion"
 	//compile "org.thymeleaf.extras: thymeleaf-extras-springsecurity4: 3.0.2.RELEASE"
+	//compile "org.springframework.boot:spring-boot-starter-jdbc:$springBootVersion"
 	compile "org.springframework.statemachine:spring-statemachine-core:1.2.5.RELEASE"
 	//swagger
 	compile group: 'io.springfox', name: 'springfox-swagger2', version: '2.6.1'
